@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx functions-framework --target=connectPeer --signature-type=http --port=3000",
+    "deploy": ""
   },
   "author": "Richie Casto (https://github.com/rcasto)",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@google-cloud/functions-framework": "1.7.1"
+  }
 }
