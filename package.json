@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=14.x.x"
+  },
   "scripts": {
     "start": "npx functions-framework --target=connectPeer --signature-type=http --port=3000",
-    "deploy": ""
+    "deploy": "npm run deploy:setup && npm run deploy:gcloud",
+    "deploy:setup": "gcloud config set project peerpass-315217",
+    "deploy:gcloud": "gcloud functions deploy connectPeer --runtime nodejs14 --trigger-http --allow-unauthenticated"
   },
   "author": "Richie Casto (https://github.com/rcasto)",
   "license": "MIT",
