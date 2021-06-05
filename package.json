@@ -7,15 +7,19 @@
     "node": ">=14.x.x"
   },
   "scripts": {
-    "start": "npx functions-framework --target=connectPeer --signature-type=http --port=3000",
-    "deploy": "npm run deploy:setup && npm run deploy:gcloud",
+    "start": "npm-run-all --parallel start:*",
+    "start:createRoom": "npx functions-framework --target=createRoom --signature-type=http --port=3000",
+    "start:connectToRoom": "npx functions-framework --target=connectToRoom --signature-type=http --port=3001",
+    "deploy": "npm-run-all deploy:setup --parallel deploy:createRoom deploy:connectToRoom",
     "deploy:setup": "gcloud config set project peerpass-315217",
-    "deploy:gcloud": "gcloud functions deploy connectPeer --runtime nodejs14 --trigger-http --allow-unauthenticated --security-level=secure-always"
+    "deploy:createRoom": "gcloud functions deploy createRoom --runtime nodejs14 --trigger-http --allow-unauthenticated --security-level=secure-always",
+    "deploy:connectToRoom": "gcloud functions deploy connectToRoom --runtime nodejs14 --trigger-http --allow-unauthenticated --security-level=secure-always"
   },
   "author": "Richie Casto (https://github.com/rcasto)",
   "license": "MIT",
   "devDependencies": {
-    "@google-cloud/functions-framework": "1.7.1"
+    "@google-cloud/functions-framework": "1.7.1",
+    "npm-run-all": "4.1.5"
   },
   "dependencies": {
     "@google-cloud/storage": "5.8.5"

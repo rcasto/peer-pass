@@ -18,7 +18,5 @@
 const { createRoom } = require('./functions/createRoom');
 const { connectToRoom } = require('./functions/connectToRoom');
 
-exports = {
-    createRoom,
-    connectToRoom,
-};
+exports.createRoom = createRoom;
+exports.connectToRoom = connectToRoom;
