@@ -15,8 +15,5 @@
  * - They must also provide the correct password/code if one is specified for the room
  * - An offer should always be available for an active room
  */
-const { createRoom } = require('./functions/createRoom');
-const { connectToRoom } = require('./functions/connectToRoom');
-
-exports.createRoom = createRoom;
-exports.connectToRoom = connectToRoom;
+export { createRoom } from './functions/createRoom';
+export { connectToRoom } from './functions/connectToRoom';

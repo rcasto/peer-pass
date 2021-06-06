@@ -1,4 +1,6 @@
-exports.isValidRequest = (req) => {
+import { Request } from 'express';
+
+export function isValidRequest(req: Request): boolean {
     if (req.method !== 'POST') {
         return false;
     }
