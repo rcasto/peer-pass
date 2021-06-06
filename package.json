@@ -7,6 +7,8 @@
     "node": ">=14.x.x"
   },
   "scripts": {
+    "build": "npm-run-all build:*",
+    "build:tsc": "tsc",
     "start": "npm-run-all --parallel start:*",
     "start:createRoom": "npx functions-framework --target=createRoom --signature-type=http --port=3000",
     "start:connectToRoom": "npx functions-framework --target=connectToRoom --signature-type=http --port=3001",
