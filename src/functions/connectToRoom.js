@@ -1,4 +1,4 @@
-const { isValidRequest } = require('../helpers/validate');
+const { isValidRequest } = require('./helpers/validate');
 
 exports.connectToRoom = (req, res) => {
     if (!isValidRequest(req)) {
