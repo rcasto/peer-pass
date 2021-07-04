@@ -1,23 +1,22 @@
 import { Request } from 'express';
 
-interface RoomInfo {
-    name: string;
-    password?: string;
+interface SDPData {
+    type: 'offer' | 'answer';
+    sdp: string;
 }
 
-export interface CreateRoomRequest extends Request {
-    body: CreateRoomRequestBody;
+interface CodeExchange {
+    code: string;
 }
 
-export interface CreateRoomRequestBody extends RoomInfo {
-    offer: string;
+export interface SubmitSDPRequest extends Request {
+    body: SDPData;
 }
 
-export interface ConnectToRoomRequest extends Request {
-    body: ConnectToRoomRequestBody;
+export interface SubmitSDPResponse extends CodeExchange { }
+
+export interface RetrieveSDPRequest extends Request {
+    body: CodeExchange;
 }
 
-export interface ConnectToRoomRequestBody extends RoomInfo {
-    type: 'getOffer' | 'getAnswer' | 'addAnswer';
-    data: string;
-}
+export interface RetrieveSDPResponse extends SDPData { }

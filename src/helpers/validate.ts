@@ -1,42 +1,26 @@
-import { Request } from 'express';
-import { CreateRoomRequest } from '../schemas';
+import { SubmitSDPRequest, RetrieveSDPRequest } from '../schemas';
 
-export function isValidRequest(req: Request): boolean {
-    if (req.method !== 'POST') {
-        return false;
-    }
-    
-    const contentType = req.get('content-type');
-    if (contentType !== 'application/json') {
-        return false;
-    }
-
-    const { type } = req.body || {};
-    if (typeof type !== 'string') {
-        return false;
-    }
-
-    return true;
+function isValidType(type: string): boolean {
+    return type === 'offer' || type === 'answer';
 }
 
-export function isValidCreateRoomRequest(req: Request): req is CreateRoomRequest {
-    if (req.method !== 'POST') {
-        return false;
-    }
+function isValidSDP(sdp: string): boolean {
+    const normalizedSDP: string = sdp || '';
+    return normalizedSDP.startsWith('v=') && normalizedSDP.endsWith('\r\n');
+}
 
-    if (typeof req.body !== 'object') {
-        return false;
-    }
+function isValidCode(code: string): boolean {
+    return !!(code || '');
+}
 
-    if (typeof req.body.name !== 'string') {
-        return false;
-    }
-    if (req.body.password && typeof req.body.password !== 'string') {
-        return false;
-    }
-    if (typeof req.body.offer !== 'string') {
-        return false;
-    }
+export function isValidSubmitSDPRequest(req: SubmitSDPRequest): boolean {
+    const { type, sdp } = req.body;
 
-    return true;
+    return isValidType(type) && isValidSDP(sdp);
+}
+
+export function isValidRetrieveSDPRequest(req: RetrieveSDPRequest): boolean {
+    const { code } = req.body;
+
+    return isValidCode(code);
 }
