@@ -1,5 +1,6 @@
 import express from 'express';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { createSDPCache, SDP_ENTRY_TTL_IN_SECONDS } from './cache';
 import { generateUniqueOneTimeCode } from './helpers/util';
 import { isValidRetrieveSDPRequest, isValidSubmitSDPRequest } from './helpers/validate';
@@ -8,10 +9,15 @@ import { Cache, RetrieveSDPRequest, RetrieveSDPResponse, SDPData, SubmitSDPReque
 const app = express();
 const port = process.env.PORT || 3000;
 
+const limiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 10 minutes
+    max: 50,                  // limit each IP to 50 requests per windowMs
+});
 const sdpCache: Cache<SDPData> = createSDPCache();
 
 app.use(express.json());
 app.use(helmet());
+app.use(limiter);
 
 app.post('/api/peer/submit', (req: SubmitSDPRequest, res) => {
     if (!isValidSubmitSDPRequest(req)) {
