@@ -1,11 +1,17 @@
 import { Request } from 'express';
 
-interface SDPData {
+export interface Cache<T> {
+    get: (key: string) => T | undefined;
+    set: (key: string, value: T, ttl: number) => boolean;
+    del: (key: string) => boolean;
+}
+
+export interface SDPData {
     type: 'offer' | 'answer';
     sdp: string;
 }
 
-interface CodeExchange {
+export interface CodeExchange {
     code: string;
 }
 

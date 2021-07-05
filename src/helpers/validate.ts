@@ -4,6 +4,7 @@ function isValidType(type: string): boolean {
     return type === 'offer' || type === 'answer';
 }
 
+// https://datatracker.ietf.org/doc/html/rfc4566#section-5
 function isValidSDP(sdp: string): boolean {
     const normalizedSDP: string = sdp || '';
     return normalizedSDP.startsWith('v=') && normalizedSDP.endsWith('\r\n');
