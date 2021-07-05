@@ -55,6 +55,11 @@ app.post('/api/peer/retrieve', (req: RetrieveSDPRequest, res) => {
     res.json(result);
 });
 
+// https://cloud.google.com/appengine/docs/standard/nodejs/configuring-warmup-requests#creating_your_handler
+app.get('/_ah/warmup', (req, res) => {
+    res.status(200).end();
+});
+
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
 });
