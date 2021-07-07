@@ -16,7 +16,7 @@ function isExpired(file: File): boolean {
     const timeCreatedDate = new Date(file.metadata.timeCreated);
     const expiresAt = timeCreatedDate.getTime() + SDP_ENTRY_TTL_IN_MS + SDP_ENTRY_TTL_BUFFER;
 
-    return Date.now() < expiresAt;
+    return Date.now() >= expiresAt;
 }
 
 function getFileNameForKey(key: string): string {
