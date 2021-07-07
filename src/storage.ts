@@ -3,7 +3,7 @@ import { SDPData } from './schemas';
 
 const PEER_PASS_BUCKET_NAME = 'peer-pass';
 const SDP_ENTRY_TTL_IN_MS: number = 1000 * 60 * 10; // 10 minutes
-const SDP_ENTRY_TTL_BUFFER: number = 1000 * 60 * 1; // 1 minute
+const SDP_ENTRY_TTL_BUFFER_IN_MS: number = 1000 * 60 * 1; // 1 minute
 
 const storage = new Storage();
 const peerPassBucket = storage.bucket(PEER_PASS_BUCKET_NAME);
@@ -14,7 +14,7 @@ function isExpired(file: File): boolean {
     }
 
     const timeCreatedDate = new Date(file.metadata.timeCreated);
-    const expiresAt = timeCreatedDate.getTime() + SDP_ENTRY_TTL_IN_MS + SDP_ENTRY_TTL_BUFFER;
+    const expiresAt = timeCreatedDate.getTime() + SDP_ENTRY_TTL_IN_MS + SDP_ENTRY_TTL_BUFFER_IN_MS;
 
     return Date.now() >= expiresAt;
 }
