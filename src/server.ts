@@ -1,10 +1,10 @@
 import express from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { createSDPCache, SDP_ENTRY_TTL_IN_SECONDS } from './cache';
 import { generateUniqueOneTimeCode } from './helpers/util';
 import { isValidRetrieveSDPRequest, isValidSubmitSDPRequest } from './helpers/validate';
-import { Cache, RetrieveSDPRequest, RetrieveSDPResponse, SDPData, SubmitSDPRequest, SubmitSDPResponse } from './schemas';
+import { RetrieveSDPRequest, RetrieveSDPResponse, SubmitSDPRequest, SubmitSDPResponse } from './schemas';
+import { BlobCache } from './storage';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -13,35 +13,43 @@ const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
     max: 50,                  // limit each IP to 50 requests per windowMs
 });
-const sdpCache: Cache<SDPData> = createSDPCache();
 
 app.use(express.json());
 app.use(helmet());
 app.use(limiter);
 
-app.post('/api/peer/submit', (req: SubmitSDPRequest, res) => {
+app.post('/api/peer/submit', async (req: SubmitSDPRequest, res) => {
     if (!isValidSubmitSDPRequest(req)) {
         res.status(400).end();
         return;
     }
 
-    const result: SubmitSDPResponse = {
-        code: generateUniqueOneTimeCode(sdpCache),
+    const uniqueCode = await generateUniqueOneTimeCode(BlobCache.has);
+    if (!uniqueCode) {
+        res.status(500).end();
+        return;
+    }
+
+    const setResult = await BlobCache.set(uniqueCode, req.body);
+    if (!setResult) {
+        res.status(500).end();
+        return;
+    }
+
+    const submitSDPResponse: SubmitSDPResponse = {
+        code: uniqueCode,
     };
-
-    sdpCache.set(result.code, req.body, SDP_ENTRY_TTL_IN_SECONDS);
-
-    res.json(result);
+    res.json(submitSDPResponse);
 });
 
-app.post('/api/peer/retrieve', (req: RetrieveSDPRequest, res) => {
+app.post('/api/peer/retrieve', async (req: RetrieveSDPRequest, res) => {
     if (!isValidRetrieveSDPRequest(req)) {
         res.status(400).end();
         return;
     }
 
     const { code } = req.body;
-    const sdpCacheEntry = sdpCache.get(code);
+    const sdpCacheEntry = await BlobCache.get(code);
 
     if (!sdpCacheEntry) {
         res.status(404).end();
@@ -49,10 +57,13 @@ app.post('/api/peer/retrieve', (req: RetrieveSDPRequest, res) => {
     }
 
     // code has now been used, remove entry from cache
-    sdpCache.del(code);
+    await BlobCache.del(code);
 
-    const result: RetrieveSDPResponse = sdpCacheEntry;
-    res.json(result);
+    const retrieveSDPResponse: RetrieveSDPResponse = {
+        type: sdpCacheEntry.type,
+        sdp: sdpCacheEntry.sdp,
+    };
+    res.json(retrieveSDPResponse);
 });
 
 // https://cloud.google.com/appengine/docs/standard/nodejs/configuring-warmup-requests#creating_your_handler

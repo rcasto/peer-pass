@@ -3,3 +3,4 @@ dist
 
 .gcloudignore
 app.yaml
+service-account-file.json

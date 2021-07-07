@@ -11,6 +11,10 @@ export interface SDPData {
     sdp: string;
 }
 
+export interface SDPDataWithExpiry extends SDPData {
+    expiresAt: number;
+}
+
 export interface CodeExchange {
     code: string;
 }
