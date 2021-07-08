@@ -1,4 +1,5 @@
 import { File, Storage } from '@google-cloud/storage';
+import { wrapError } from './helpers/util';
 import { SDPData } from './schemas';
 
 const PEER_PASS_BUCKET_NAME = 'peer-pass';
@@ -34,13 +35,16 @@ async function findFileByName(fileName: string): Promise<File | null> {
 
         return file;
     } catch (err) {
-        console.error(`Error occurred while finding file with name ${fileName} in blob: ${err}`);
-        return null;
+        throw wrapError({
+            source: findFileByName,
+            message: `Error occurred while finding file with name ${fileName} in blob`,
+            err,
+        });
     }
 }
 
 function get(key: string): Promise<SDPData | null> {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
         const fileName = getFileNameForKey(key);
         const sdpFile = await findFileByName(fileName);
 
@@ -49,8 +53,12 @@ function get(key: string): Promise<SDPData | null> {
         }
 
         if (isExpired(sdpFile)) {
-            await del(key);
-            return resolve(null);
+            try {
+                await del(key);
+                return resolve(null);
+            } catch (err) {
+                return reject(err);
+            }
         }
 
         const fileReadableStream = sdpFile.createReadStream();
@@ -64,13 +72,19 @@ function get(key: string): Promise<SDPData | null> {
                 const sdpWithExpiry: SDPData = JSON.parse(sdpFileContents);
                 resolve(sdpWithExpiry);
             } catch (err) {
-                console.error(`Error occurred while parsing file ${fileName} contents as JSON: ${err}`);
-                resolve(null);
+                reject(wrapError({
+                    source: get,
+                    message: `Error occurred while parsing file ${fileName} contents as JSON`,
+                    err,
+                }));
             }
         });
         fileReadableStream.on('error', err => {
-            console.error(`Error occurred while reading file ${fileName}: ${err}`);
-            resolve(null);
+            reject(wrapError({
+                source: get,
+                message: `Error occurred while reading file ${fileName}`,
+                err,
+            }));
         });
     });
 }
@@ -89,8 +103,11 @@ async function set(key: string, value: SDPData): Promise<boolean> {
 
         return true;
     } catch (err) {
-        console.error(`Error occurred while writing file ${fileName} to blob: ${err}`);
-        return false;
+        throw wrapError({
+            source: set,
+            message: `Error occurred while writing file ${fileName} to blob`,
+            err,
+        });
     }
 }
 
@@ -107,8 +124,11 @@ async function del(key: string): Promise<boolean> {
 
         return true;
     } catch (err) {
-        console.error(`Error occurred while deleting file ${fileName}: ${err}`);
-        return false;
+        throw wrapError({
+            source: del,
+            message: `Error occurred while deleting file ${fileName}`,
+            err,
+        });
     }
 }
 
