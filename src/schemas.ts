@@ -1,11 +1,5 @@
 import { Request } from 'express';
 
-export interface Cache<T> {
-    get: (key: string) => T | undefined;
-    set: (key: string, value: T, ttl: number) => boolean;
-    del: (key: string) => boolean;
-}
-
 export interface SDPData {
     type: 'offer' | 'answer';
     sdp: string;
