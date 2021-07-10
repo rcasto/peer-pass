@@ -21,7 +21,9 @@ const openapiSpecification = swaggerJsdoc({
             version: '1.0.0',
         },
     },
-    apis: ['./src/peerApi.ts'],
+    apis: [
+        '**/peerApi.{js,ts}',
+    ],
 });
 
 app.use(express.json());
