@@ -1,7 +1,7 @@
 import { randomInt } from 'crypto';
 import { ErrorWrapper, WrapErrorInput } from '../schemas';
 
-const ONE_TIME_CODE_LENGTH: number = 6;
+export const ONE_TIME_CODE_LENGTH: number = 6;
 const MAX_ONE_TIME_CODE: number = parseInt('9'.repeat(ONE_TIME_CODE_LENGTH), 10) + 1;
 const MAX_ONE_TIME_CODE_GENERATE_ATTEMPTS: number = 25;
 

@@ -1,4 +1,5 @@
 import { SubmitSDPRequest, RetrieveSDPRequest } from '../schemas';
+import { ONE_TIME_CODE_LENGTH } from './util';
 
 const MAX_ALLOWED_BYTE_SIZE_FOR_SDP: number = 1024 * 10; // 10KB for SDP
 
@@ -9,7 +10,7 @@ function isValidType(type: string): boolean {
 // https://datatracker.ietf.org/doc/html/rfc4566#section-5
 function isValidSDP(sdp: string): boolean {
     const normalizedSDP: string = sdp || '';
-    const sdpByteLength: number = Buffer.byteLength(sdp, 'utf8');
+    const sdpByteLength: number = Buffer.byteLength(normalizedSDP, 'utf8');
 
     return (
         normalizedSDP.startsWith('v=') &&
@@ -19,7 +20,7 @@ function isValidSDP(sdp: string): boolean {
 }
 
 function isValidCode(code: string): boolean {
-    return !!(code || '');
+    return (code || '').length !== ONE_TIME_CODE_LENGTH;
 }
 
 export function isValidSubmitSDPRequest(req: SubmitSDPRequest): boolean {
