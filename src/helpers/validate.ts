@@ -1,5 +1,7 @@
 import { SubmitSDPRequest, RetrieveSDPRequest } from '../schemas';
 
+const MAX_ALLOWED_BYTE_SIZE_FOR_SDP: number = 1024 * 10; // 10KB for SDP
+
 function isValidType(type: string): boolean {
     return type === 'offer' || type === 'answer';
 }
@@ -7,7 +9,13 @@ function isValidType(type: string): boolean {
 // https://datatracker.ietf.org/doc/html/rfc4566#section-5
 function isValidSDP(sdp: string): boolean {
     const normalizedSDP: string = sdp || '';
-    return normalizedSDP.startsWith('v=') && normalizedSDP.endsWith('\r\n');
+    const sdpByteLength: number = Buffer.byteLength(sdp, 'utf8');
+
+    return (
+        normalizedSDP.startsWith('v=') &&
+        normalizedSDP.endsWith('\r\n') &&
+        sdpByteLength <= MAX_ALLOWED_BYTE_SIZE_FOR_SDP
+    );
 }
 
 function isValidCode(code: string): boolean {
