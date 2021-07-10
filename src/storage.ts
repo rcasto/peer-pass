@@ -33,7 +33,7 @@ async function findFileByName(fileName: string): Promise<File | null> {
             maxResults: 1,
         });
 
-        return file;
+        return file || null;
     } catch (err) {
         throw wrapError({
             source: findFileByName,
@@ -69,8 +69,8 @@ function get(key: string): Promise<SDPData | null> {
         });
         fileReadableStream.on('end', async () => {
             try {
-                const sdpWithExpiry: SDPData = JSON.parse(sdpFileContents);
-                resolve(sdpWithExpiry);
+                const sdpData: SDPData = JSON.parse(sdpFileContents);
+                resolve(sdpData);
             } catch (err) {
                 reject(wrapError({
                     source: get,
@@ -89,19 +89,14 @@ function get(key: string): Promise<SDPData | null> {
     });
 }
 
-async function set(key: string, value: SDPData): Promise<boolean> {
+async function set(key: string, value: SDPData): Promise<void> {
     const fileName = getFileNameForKey(key);
     const file = peerPassBucket.file(fileName);
-    const sdpWithExpiry: SDPData = {
-        ...value,
-    };
 
     try {
-        await file.save(JSON.stringify(sdpWithExpiry), {
+        await file.save(JSON.stringify(value), {
             contentType: 'application/json',
         });
-
-        return true;
     } catch (err) {
         throw wrapError({
             source: set,
@@ -121,7 +116,6 @@ async function del(key: string): Promise<boolean> {
 
     try {
         await file.delete();
-
         return true;
     } catch (err) {
         throw wrapError({
@@ -135,7 +129,6 @@ async function del(key: string): Promise<boolean> {
 async function has(key: string): Promise<boolean> {
     const fileName = getFileNameForKey(key);
     const file = await findFileByName(fileName);
-
     return !!file;
 }
 
