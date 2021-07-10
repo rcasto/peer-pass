@@ -2,6 +2,20 @@ import express from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import peerApi from './peerApi';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+
+const swaggerJsdocOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'peer-pass',
+      version: '1.0.0',
+    },
+  },
+  apis: ['./src/peerApi.ts'],
+};
+const openapiSpecification = swaggerJsdoc(swaggerJsdocOptions);
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,6 +29,7 @@ app.use(express.json());
 app.use(helmet());
 app.use(limiter);
 
+app.use('/', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 app.use('/api/peer', peerApi);
 
 app.listen(port, () => {

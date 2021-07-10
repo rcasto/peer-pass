@@ -11,6 +11,39 @@ function handleErrorResponse(res: Response, err: any): void {
     res.status(500).end();
 }
 
+/**
+ * @openapi
+ * /api/peer/submit:
+ *   post:
+ *     description: Submit offer or answer SDP to be stored for peer to pick up with one time code.
+ *     responses:
+ *       200:
+ *         description: Returns an object containing a one time code, used to access stored offer or answer SDP.
+ *         content:
+ *             application/json:
+ *                 schema:
+ *                     type: object
+ *                     properties:
+ *                         code:
+ *                             type: string
+ *       400:
+ *         description: Invalid request received.
+ *       500:
+ *         description: An internal server error occurred.
+ *     requestBody:
+ *         required: true
+ *         content:
+ *             application/json:
+ *                 schema:
+ *                     type: object
+ *                     properties:
+ *                         type:
+ *                             type: string
+ *                             enum: [offer, answer]
+ *                         sdp:
+ *                             type: string
+ * 
+ */
 router.post('/submit', async (req: SubmitSDPRequest, res) => {
     try {
         if (!isValidSubmitSDPRequest(req)) {
@@ -19,16 +52,7 @@ router.post('/submit', async (req: SubmitSDPRequest, res) => {
         }
 
         const uniqueCode = await generateUniqueOneTimeCode(BlobCache.has);
-        if (!uniqueCode) {
-            res.status(500).end();
-            return;
-        }
-
-        const setResult = await BlobCache.set(uniqueCode, req.body);
-        if (!setResult) {
-            res.status(500).end();
-            return;
-        }
+        await BlobCache.set(uniqueCode, req.body);
 
         const submitSDPResponse: SubmitSDPResponse = {
             code: uniqueCode,
@@ -39,6 +63,40 @@ router.post('/submit', async (req: SubmitSDPRequest, res) => {
     }
 });
 
+/**
+ * @openapi
+ * /api/peer/retrieve:
+ *   post:
+ *     description: Retrieve offer or answer SDP using one time code from peer.
+ *     responses:
+ *       200:
+ *         description: Returns the offer or answer SDP object stored by peer.
+ *         content:
+ *             application/json:
+ *                 schema:
+ *                     type: object
+ *                     properties:
+ *                         type:
+ *                             type: string
+ *                             enum: [offer, answer]
+ *                         sdp:
+ *                             type: string
+ *       400:
+ *         description: Invalid request received.
+ *       404:
+ *         description: No offer or answer SDP found for one time code, or one time code has expired.
+ *       500:
+ *         description: An internal server error occurred.
+ *     requestBody:
+ *         required: true
+ *         content:
+ *             application/json:
+ *                 schema:
+ *                     type: object
+ *                     properties:
+ *                         code:
+ *                             type: string
+ */
 router.post('/retrieve', async (req: RetrieveSDPRequest, res) => {
     try {
         if (!isValidRetrieveSDPRequest(req)) {
