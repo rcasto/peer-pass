@@ -5,24 +5,23 @@ import peerApi from './peerApi';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
-const swaggerJsdocOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'peer-pass',
-      version: '1.0.0',
-    },
-  },
-  apis: ['./src/peerApi.ts'],
-};
-const openapiSpecification = swaggerJsdoc(swaggerJsdocOptions);
-
 const app = express();
 const port = process.env.PORT || 3000;
 
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
     max: 50,                  // limit each IP to 50 requests per windowMs
+});
+const openapiSpecification = swaggerJsdoc({
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'peer-pass',
+            description: 'An API to facilitate in connecting peers.',
+            version: '1.0.0',
+        },
+    },
+    apis: ['./src/peerApi.ts'],
 });
 
 app.use(express.json());
