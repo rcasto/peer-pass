@@ -30,7 +30,9 @@ app.use(express.json());
 app.use(helmet());
 app.use(limiter);
 
-app.use('/', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+app.use('/', swaggerUi.serve);
+app.get('/', swaggerUi.setup(openapiSpecification));
+
 app.use('/api/peer', peerApi);
 
 app.listen(port, () => {
