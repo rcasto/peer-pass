@@ -20,7 +20,7 @@ function isValidSDP(sdp: string): boolean {
 }
 
 function isValidCode(code: string): boolean {
-    return (code || '').length !== ONE_TIME_CODE_LENGTH;
+    return (code || '').length === ONE_TIME_CODE_LENGTH;
 }
 
 export function isValidSubmitSDPRequest(req: SubmitSDPRequest): boolean {
