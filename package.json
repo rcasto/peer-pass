@@ -1,7 +1,7 @@
 {
   "name": "peer-pass",
   "version": "0.0.1",
-  "description": "",
+  "description": "A service facilitating in connecting peers together.",
   "main": "./dist/index.js",
   "engines": {
     "node": "14.x.x"
