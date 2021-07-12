@@ -1,6 +1,6 @@
 import { File, Storage } from '@google-cloud/storage';
 import { wrapError } from './helpers/util';
-import { SDPData } from './schemas';
+import { IStorage, SDPData } from './schemas';
 
 const PEER_PASS_BUCKET_NAME = 'peer-pass';
 const SDP_ENTRY_TTL_IN_MS: number = 1000 * 60 * 10; // 10 minutes
@@ -132,7 +132,7 @@ async function has(key: string): Promise<boolean> {
     return !!file;
 }
 
-export const BlobCache = {
+export const BlobCache: IStorage = {
     get,
     set,
     del,

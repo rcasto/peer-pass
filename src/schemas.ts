@@ -32,3 +32,10 @@ export interface RetrieveSDPRequest extends Request {
 }
 
 export interface RetrieveSDPResponse extends SDPData { }
+
+export interface IStorage {
+    get: (key: string) => Promise<SDPData | null>;
+    set: (key: string, value: SDPData) => Promise<void>;
+    del: (key: string) => Promise<boolean>;
+    has: (key: string) => Promise<boolean>;
+}
