@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 20,                  // limit each IP to 20 requests per windowMs
+    max: 15,                  // limit each IP to 15 requests per windowMs
 });
 const openapiSpecification = swaggerJsdoc({
     definition: {
